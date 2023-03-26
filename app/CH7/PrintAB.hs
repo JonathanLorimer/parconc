@@ -1,4 +1,4 @@
-module PrintAB where
+module CH7.PrintAB where
 
 import Control.Concurrent
 import Control.Monad

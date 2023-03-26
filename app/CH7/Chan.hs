@@ -2,7 +2,6 @@ module CH7.Chan where
 
 import Control.Concurrent
     ( newEmptyMVar, newMVar, putMVar, readMVar, takeMVar, MVar )
-import Control.Monad
 
 data Stream a = Item a (MVar (Stream a))
 

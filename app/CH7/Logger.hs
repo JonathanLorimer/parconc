@@ -1,4 +1,4 @@
-module Logger where
+module CH7.Logger where
 
 import Control.Concurrent
 import Control.Monad

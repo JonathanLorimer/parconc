@@ -1,4 +1,4 @@
-module MVar where
+module CH7.MVar where
 
 import Control.Concurrent
 import Control.Monad

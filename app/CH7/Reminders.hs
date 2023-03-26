@@ -1,4 +1,4 @@
-module Reminders where
+module CH7.Reminders where
 
 import Control.Concurrent
 import Control.Monad
