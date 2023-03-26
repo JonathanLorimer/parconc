@@ -1,6 +1,5 @@
 module Main where
-
-import CH7.Chan
+import CH8.Merge
 
 main :: IO ()
-main = dupChanBlockExample
+main = getURLsRaceAsync
