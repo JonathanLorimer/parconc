@@ -1,0 +1,80 @@
+cabal-version: 2.2
+
+name:           parconc
+version:        0
+-- synopsis:       $synopsis
+-- description:    $description
+-- category:       $category
+-- homepage:       $gitrepo#readme
+-- bug-reports:    $gitrepo/issues
+-- maintainer:     $maintainer
+build-type:     Simple
+
+-- source-repository head
+--   type: git
+--   location: $gitrepo
+
+common common-opts
+  default-extensions:
+    AllowAmbiguousTypes
+    BlockArguments
+    ConstraintKinds
+    DataKinds
+    DeriveAnyClass
+    DeriveFunctor
+    DeriveGeneric
+    DerivingStrategies
+    DerivingVia
+    FlexibleInstances
+    FlexibleContexts
+    GADTs
+    GeneralizedNewtypeDeriving
+    InstanceSigs
+    ImportQualifiedPost
+    KindSignatures
+    LambdaCase
+    MultiParamTypeClasses
+    MultiWayIf
+    NamedFieldPuns
+    NumericUnderscores
+    OverloadedStrings
+    RecordWildCards
+    ScopedTypeVariables
+    StandaloneDeriving
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+
+  build-depends:
+      base
+    , aeson
+    , containers
+    , mtl
+    , text
+
+  default-language: Haskell2010
+
+executable parconc
+  import: common-opts
+  main-is: Main.hs
+  ghc-options:
+    -Wall
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
+  hs-source-dirs:
+    app
+
+test-suite test
+  import: common-opts
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  build-depends:
+    , parconc
+    , QuickCheck
+    , hspec
+    , hspec-expectations
+    , hspec-discover

@@ -1,0 +1,6 @@
+cradle:
+  cabal:
+    - path: "./test"
+      component: "parconc:test"
+    - path: "./app"
+      component: "exe:parconc"
