@@ -1,5 +1,5 @@
 module Main where
-import CH8.Merge
+import CH9.AsyncExceptions
 
 main :: IO ()
-main = getURLsRaceAsync
+main = getURLsAsyncCancellable

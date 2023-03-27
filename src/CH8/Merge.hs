@@ -8,6 +8,7 @@ import Data.ByteString.Lazy (ByteString)
 import Network.HTTP.Client.TLS
 import Text.Printf
 import Control.Exception
+
 import CH8.AsyncAwaitExcept (Async(..), await, async)
 
 runReq :: Manager -> String -> IO (String, ByteString)

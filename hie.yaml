@@ -4,3 +4,5 @@ cradle:
       component: "parconc:test"
     - path: "./app"
       component: "exe:parconc"
+    - path: "./src"
+      component: "lib:parconc"
