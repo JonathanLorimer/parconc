@@ -66,10 +66,13 @@ library
     CH9.AsyncExceptions
     CH9.Chan
     CH9.Timeout
+    CH10.WindowManager
   build-depends:
       bytestring
+    , containers
     , http-client
     , http-client-tls
+    , stm
     , timeit
   hs-source-dirs:
     src
