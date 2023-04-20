@@ -19,31 +19,17 @@ common common-opts
     AllowAmbiguousTypes
     BlockArguments
     ConstraintKinds
-    DataKinds
-    DeriveAnyClass
-    DeriveFunctor
-    DeriveGeneric
-    DerivingStrategies
-    DerivingVia
-    FlexibleInstances
-    FlexibleContexts
     GADTs
     GeneralizedNewtypeDeriving
-    InstanceSigs
     ImportQualifiedPost
-    KindSignatures
     LambdaCase
     MultiParamTypeClasses
     MultiWayIf
-    NamedFieldPuns
     NumericUnderscores
     OverloadedStrings
-    RecordWildCards
     ScopedTypeVariables
-    StandaloneDeriving
     TupleSections
     TypeApplications
-    TypeFamilies
     TypeOperators
 
   build-depends:
@@ -67,6 +53,7 @@ library
     CH9.Chan
     CH9.Timeout
     CH10.WindowManager
+    CH11.Async
   build-depends:
       bytestring
     , containers
@@ -77,13 +64,22 @@ library
   hs-source-dirs:
     src
 
+library experiments
+  import: common-opts
+  exposed-modules:
+    Challenges.Philosophers
+  build-depends:
+      stm
+    , async
+  hs-source-dirs:
+    experiments
+
 executable parconc
   import: common-opts
   main-is: Main.hs
   build-depends:
-    parconc
+    experiments
   ghc-options:
-    -Wall
     -threaded
     -rtsopts
     -with-rtsopts=-N
@@ -97,7 +93,6 @@ test-suite test
   hs-source-dirs:
       test
   build-depends:
-    , parconc
     , QuickCheck
     , hspec
     , hspec-expectations

@@ -15,14 +15,11 @@
     utils = flake-utils.lib;
   in
     utils.eachDefaultSystem (system: let
-      compilerVersion = "ghc925";
+      compilerVersion = "ghc944";
       pkgs = nixpkgs.legacyPackages.${system};
       hsPkgs = pkgs.haskell.packages.${compilerVersion}.override {
         overrides = hfinal: hprev: {
           parconc = hfinal.callCabal2nix "parconc" ./. {};
-          # Needed for hls on ghc 9.2.5 and 9.4.3
-          # https://github.com/ddssff/listlike/issues/23
-          ListLike = pkgs.haskell.lib.dontCheck hprev.ListLike;
         };
       };
     in {
@@ -42,7 +39,6 @@
 
       # nix develop
       devShell = hsPkgs.shellFor {
-        withHoogle = true;
         packages = p: [
           p.parconc
         ];

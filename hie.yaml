@@ -2,7 +2,9 @@ cradle:
   cabal:
     - path: "./test"
       component: "parconc:test"
-    - path: "./app"
-      component: "exe:parconc"
     - path: "./src"
       component: "lib:parconc"
+    - path: "./experiments"
+      component: "lib:experiments"
+    - path: "./app"
+      component: "exe:parconc"
