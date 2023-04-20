@@ -6,6 +6,6 @@ import Control.Monad
 
 main = do
     done <- newEmptyMVar
-    forkIO (diningPhilosophers done)
+    forkIO (diningPhilosophersRec done)
     takeMVar done
     print "All done"
