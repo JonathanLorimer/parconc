@@ -121,7 +121,7 @@ waitOnNeighbors left right = do
   l <- readTVar left
   r <- readTVar right
   check (l /= Hungry)
-  check (l /= Hungry)
+  check (r /= Hungry)
 
 
 
