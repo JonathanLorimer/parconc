@@ -67,7 +67,8 @@ library
 library experiments
   import: common-opts
   exposed-modules:
-    Challenges.Philosophers
+    Challenges.Philosophers.MVar
+    Challenges.Philosophers.STM
   build-depends:
       stm
     , async
@@ -78,7 +79,8 @@ executable parconc
   import: common-opts
   main-is: Main.hs
   build-depends:
-    experiments
+      experiments
+    , stm
   ghc-options:
     -threaded
     -rtsopts
