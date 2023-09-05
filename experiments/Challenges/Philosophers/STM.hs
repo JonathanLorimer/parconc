@@ -15,7 +15,6 @@ data Philosopher
   | Starved
   deriving (Eq, Show)
 
-
 newtype PhilosopherDied = PhilosopherDied String deriving (Show)
 
 instance Exception PhilosopherDied
@@ -42,26 +41,27 @@ diningPhilosophers done = do
   forkIO $ philosopher mutex done (voltaire, "voltaire") (fork4, fork5) (socrates, descartes)
   forkIO $ philosopher mutex done (descartes, "descartes") (fork5, fork1) (voltaire, plato)
 
-  -- forkIO $ forever do
-  --   threadDelay (4 * 10 ^ 5)
-  --   states <- mapM readTVarIO
-  --     [ plato
-  --     , konfuzius
-  --     , socrates
-  --     , voltaire
-  --     , descartes
-  --     ]
-  --   print $ zip states
-  --     [ "plato"
-  --     , "konfuzius"
-  --     , "socrates"
-  --     , "voltaire"
-  --     , "descartes"
-  --     ]
-  --
   threadDelay (30 * 10 ^ 6)
 
   pure ()
+
+-- nicer logging if you want it
+-- forkIO $ forever do
+--   threadDelay (4 * 10 ^ 5)
+--   states <- mapM readTVarIO
+--     [ plato
+--     , konfuzius
+--     , socrates
+--     , voltaire
+--     , descartes
+--     ]
+--   print $ zip states
+--     [ "plato"
+--     , "konfuzius"
+--     , "socrates"
+--     , "voltaire"
+--     , "descartes"
+--     ]
 
 philosopher
   :: TMVar ()

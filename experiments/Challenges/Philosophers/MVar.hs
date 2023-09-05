@@ -15,6 +15,7 @@ newtype PhilosopherDied = PhilosopherDied String deriving Show
 
 instance Exception PhilosopherDied
 
+-- Unfortunately this solution depends on the fairness of haskell's concurrency scheduler
 diningPhilosophers :: MVar () -> IO ()
 diningPhilosophers done = do
   tId <- myThreadId
