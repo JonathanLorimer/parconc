@@ -1,11 +1,10 @@
 module Main where
 
-import Challenges.Philosophers.STM
-import Control.Concurrent
-import Control.Monad
+import Challenges.Mentoring.Core (initLogger)
+import Control.Concurrent.Async (mapConcurrently)
+import Control.Monad (void)
+import Challenges.Mentoring.Core (withLogger)
 
-main = do
-    done <- newEmptyMVar
-    forkIO (diningPhilosophers done)
-    takeMVar done
-    print "All done"
+main :: IO ()
+main = withLogger \putLog -> 
+  void $ mapConcurrently putLog (fmap (\n -> "log number: " <> show n) [0 .. 100])

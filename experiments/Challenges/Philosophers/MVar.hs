@@ -1,9 +1,8 @@
 module Challenges.Philosophers.MVar where
 
 import Control.Concurrent
-import Control.Monad (forever)
 import Control.Exception
-import System.Exit
+import Control.Monad (forever, void)
 
 data Fork = Fork
 
@@ -11,7 +10,7 @@ data Philosopher
   = Thinking
   | Eating Fork Fork
 
-newtype PhilosopherDied = PhilosopherDied String deriving Show
+newtype PhilosopherDied = PhilosopherDied String deriving (Show)
 
 instance Exception PhilosopherDied
 
@@ -35,25 +34,25 @@ diningPhilosophers done = do
 
   let forkPhilosopher = flip forkFinally (handlePhilosopherDeath tId)
 
-  forkPhilosopher $ runPhilosopher chan (plato, "plato") (fork1, "fork1") (fork2, "fork2")
-  forkPhilosopher $ runPhilosopher chan (konfuzius, "konfuzius") (fork2, "fork2") (fork3, "fork3")
-  forkPhilosopher $ runPhilosopher chan (socrates, "socrates") (fork3, "fork3") (fork4, "fork4")
-  forkPhilosopher $ runPhilosopher chan (voltaire, "voltaire") (fork4, "fork4") (fork5, "fork5")
-  forkPhilosopher $ runPhilosopher chan (descartes, "descartes") (fork5, "fork5") (fork1, "fork1")
+  void $ forkPhilosopher $ runPhilosopher chan (plato, "plato") (fork1, "fork1") (fork2, "fork2")
+  void $ forkPhilosopher $ runPhilosopher chan (konfuzius, "konfuzius") (fork2, "fork2") (fork3, "fork3")
+  void $ forkPhilosopher $ runPhilosopher chan (socrates, "socrates") (fork3, "fork3") (fork4, "fork4")
+  void $ forkPhilosopher $ runPhilosopher chan (voltaire, "voltaire") (fork4, "fork4") (fork5, "fork5")
+  void $ forkPhilosopher $ runPhilosopher chan (descartes, "descartes") (fork5, "fork5") (fork1, "fork1")
 
-  forkIO $ forever (readChan chan >>= print)
+  void $ forkIO $ forever (readChan chan >>= print)
 
   pure ()
-    where
-      handlePhilosopherDeath :: ThreadId -> Either SomeException () -> IO ()
-      handlePhilosopherDeath tId (Left e) =
-        case fromException e of
-          (Just (PhilosopherDied philName)) -> do
-            print (philName ++ " has died ")
-            putMVar done ()
-            killThread tId
-          _ -> pure ()
-      handlePhilosopherDeath _ _ = pure ()
+ where
+  handlePhilosopherDeath :: ThreadId -> Either SomeException () -> IO ()
+  handlePhilosopherDeath tId (Left e) =
+    case fromException e of
+      (Just (PhilosopherDied philName)) -> do
+        print (philName ++ " has died ")
+        putMVar done ()
+        killThread tId
+      _ -> pure ()
+  handlePhilosopherDeath _ _ = pure ()
 
 runPhilosopher :: Chan String -> (MVar Philosopher, String) -> (MVar Fork, String) -> (MVar Fork, String) -> IO ()
 runPhilosopher chan (pState, pName) (f1State, f1Name) (f2State, f2Name) = do
@@ -61,16 +60,19 @@ runPhilosopher chan (pState, pName) (f1State, f1Name) (f2State, f2Name) = do
   forever $
     takeMVar pState >>= \case
       Thinking -> do
-        bracket (forkIO do
-                    threadDelay (10 * (10 ^ 6))
-                    throwTo tid (PhilosopherDied pName))
-                (`throwTo` ThreadKilled)
-                (\_ -> do
-                    f1 <- takeMVar f1State
-                    writeChan chan (pName ++ " took " ++ f1Name)
-                    f2 <- takeMVar f2State
-                    writeChan chan (pName ++ " took " ++ f2Name)
-                    putMVar pState (Eating f1 f2))
+        bracket
+          ( forkIO do
+              threadDelay (10 * (10 ^ 6))
+              throwTo tid (PhilosopherDied pName)
+          )
+          (`throwTo` ThreadKilled)
+          ( \_ -> do
+              f1 <- takeMVar f1State
+              writeChan chan (pName ++ " took " ++ f1Name)
+              f2 <- takeMVar f2State
+              writeChan chan (pName ++ " took " ++ f2Name)
+              putMVar pState (Eating f1 f2)
+          )
       Eating f1 f2 -> do
         writeChan chan (pName ++ " is eating")
         threadDelay (1 * (10 ^ 6))
