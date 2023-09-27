@@ -1,10 +1,23 @@
 module Main where
 
-import Challenges.Mentoring.Core (initLogger)
-import Control.Concurrent.Async (mapConcurrently)
-import Control.Monad (void)
-import Challenges.Mentoring.Core (withLogger)
+import Challenges.Mentoring.DBClient
+import Control.Applicative
+import Control.Concurrent
+import Control.Concurrent.STM
+import Control.Monad
+import System.Exit (exitSuccess)
 
 main :: IO ()
-main = withLogger \putLog -> 
-  void $ mapConcurrently putLog (fmap (\n -> "log number: " <> show n) [0 .. 100])
+main = do
+  queue <- newTQueueIO
+  inProgressJobs <- newTVarIO 0
+  void $ forkIO $ workerMain inProgressJobs queue
+  populateQueue queue
+  forever $ do
+    (jobs, isEmpty) <-
+      atomically $
+        liftA2
+          (,)
+          (readTVar inProgressJobs)
+          (isEmptyTQueue queue)
+    when (isEmpty && jobs == 0) exitSuccess

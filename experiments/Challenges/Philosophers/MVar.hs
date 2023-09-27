@@ -14,6 +14,9 @@ newtype PhilosopherDied = PhilosopherDied String deriving (Show)
 
 instance Exception PhilosopherDied
 
+delayMilliSecs :: Int -> Int
+delayMilliSecs = (*) ((10 :: Int) ^ (6 :: Int))
+
 -- Unfortunately this solution depends on the fairness of haskell's concurrency scheduler
 diningPhilosophers :: MVar () -> IO ()
 diningPhilosophers done = do
@@ -41,8 +44,6 @@ diningPhilosophers done = do
   void $ forkPhilosopher $ runPhilosopher chan (descartes, "descartes") (fork5, "fork5") (fork1, "fork1")
 
   void $ forkIO $ forever (readChan chan >>= print)
-
-  pure ()
  where
   handlePhilosopherDeath :: ThreadId -> Either SomeException () -> IO ()
   handlePhilosopherDeath tId (Left e) =
@@ -62,7 +63,7 @@ runPhilosopher chan (pState, pName) (f1State, f1Name) (f2State, f2Name) = do
       Thinking -> do
         bracket
           ( forkIO do
-              threadDelay (10 * (10 ^ 6))
+              threadDelay (delayMilliSecs 10)
               throwTo tid (PhilosopherDied pName)
           )
           (`throwTo` ThreadKilled)
@@ -75,7 +76,7 @@ runPhilosopher chan (pState, pName) (f1State, f1Name) (f2State, f2Name) = do
           )
       Eating f1 f2 -> do
         writeChan chan (pName ++ " is eating")
-        threadDelay (1 * (10 ^ 6))
+        threadDelay (delayMilliSecs 1)
         writeChan chan (pName ++ " is done eating")
         putMVar f1State f1
         writeChan chan (pName ++ " put " ++ f1Name ++ " back")
