@@ -59,7 +59,7 @@ introspect ConnectionPool{..} = do
   conns <- readTVarIO freeConnections
   let s1 = Set.fromList [0 .. 9]
       busy = Set.difference s1 conns
-  print $ fmap (,"busy") (Set.toList busy) <> fmap (,"free") (Set.toList conns)
+  print $ fmap (,"busy" :: String) (Set.toList busy) <> fmap (,"free" :: String) (Set.toList conns)
 
 -- Management
 
@@ -68,6 +68,3 @@ initConnPool action = do
   vars <- replicateM 10 (action >>= newTVarIO)
   freeConns <- newTVarIO $ Set.fromList [0 .. 9]
   pure $ ConnectionPool vars freeConns
-
-threadManager :: (ConnectionPool a -> IO a) -> IO a
-threadManager = undefined

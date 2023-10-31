@@ -73,8 +73,8 @@ library experiments
   import:          common-opts
   exposed-modules:
     Challenges.Mentoring.Core
-    Challenges.Mentoring.DBPool
     Challenges.Mentoring.DBClient
+    Challenges.Mentoring.DBPool
     Challenges.Philosophers.MVar
     Challenges.Philosophers.STM
 
@@ -100,10 +100,20 @@ executable parconc
 test-suite test
   import:         common-opts
   type:           exitcode-stdio-1.0
-  main-is:        Spec.hs
-  hs-source-dirs: test
+  main-is:        Main.hs
+  hs-source-dirs: test testMain
+
+  -- cabal-fmt: expand test
+  other-modules:
+    Challenges.Mentoring.DBPoolSpec
+    Spec
+
   build-depends:
+    , experiments
+    , uuid
+    , stm
     , hspec
+    , hspec-core
     , hspec-discover
     , hspec-expectations
     , QuickCheck

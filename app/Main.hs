@@ -11,7 +11,7 @@ main :: IO ()
 main = do
   queue <- newTQueueIO
   inProgressJobs <- newTVarIO 0
-  void $ forkIO $ workerMain inProgressJobs queue
+  void $ forkIO $ void (workerMain inProgressJobs queue)
   populateQueue queue
   forever $ do
     (jobs, isEmpty) <-
