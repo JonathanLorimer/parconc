@@ -63,6 +63,7 @@ introspect ConnectionPool{..} = do
 
 -- Management
 
+-- Could pass a list of IO a
 initConnPool :: IO a -> IO (ConnectionPool a)
 initConnPool action = do
   vars <- replicateM 10 (action >>= newTVarIO)
