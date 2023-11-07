@@ -41,19 +41,28 @@ spec =
       threadLock <- newMVar ()
       connLock <- newMVar ()
       finishedLock <- newMVar ()
+      
+      -- Initialize all our locks in a locked state
       takeMVar connLock
       takeMVar threadLock
       takeMVar finishedLock
-      void $ forkIO $ withConn connPool \_ -> do 
-        putMVar connLock ()
-        takeMVar threadLock
-        putMVar finishedLock ()
 
-      takeMVar connLock
+      -- Fork the "withConn" action so we can make subsequent assertions asynchronously
+      void $ forkIO $ do
+        withConn connPool \_ -> do 
+          putMVar connLock () -- Connection has been acquired so release
+          takeMVar threadLock -- Block the "withConn" thread so we can check that a free thread has been used
+        putMVar finishedLock () -- Release the finished lock so that we can check that the connection was released
+
+      -- Block on the connection being acquired
+      takeMVar connLock 
       freeConns' <- readTVarIO $ freeConnections connPool
       length freeConns' `shouldBe` length (connections connPool) - 1 
-  
-      putMVar threadLock ()
+
+      -- Release the thread lock so that the "withConn" job can finish
+      putMVar threadLock () 
+
+      -- Block until the "withConn" action has finished so we can check if the connection was released
       takeMVar finishedLock
       freeConns'' <- readTVarIO $ freeConnections connPool
       length freeConns'' `shouldBe` length (connections connPool) 
@@ -67,7 +76,7 @@ spec =
       let ue = userError (UUID.toString uuid)
 
       shouldThrow 
-        (withConn connPool \_ -> throwIO ue)
+        (withConn connPool (const $ throwIO ue))
         (\(e :: IOException) -> e == ue)
 
       freeConns' <- readTVarIO $ freeConnections connPool
